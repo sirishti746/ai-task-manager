@@ -47,7 +47,7 @@ The commands below are for Windows Command Prompt (cmd). On Linux or macOS, use 
 **1. Get the code and enter the project folder**
 
 ```cmd
-git clone <repository-url>
+git clone https://github.com/sirishti746/ai-task-manager
 cd ai-task-manager
 ```
 
