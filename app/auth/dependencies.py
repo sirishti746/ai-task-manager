@@ -11,7 +11,7 @@ from app.models.user import User, UserRole
 from app.services import user_service
 
 # Reads "Authorization: Bearer <token>". auto_error=False: if the header is
-# missing we get None and raise our own 401 (consistent behavior).
+# missing we get None and raise our own 401.
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
@@ -29,26 +29,24 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     """Identify who is calling. Used by every protected route."""
-    # 1. No Authorization header (or not "Bearer ...") -> 401
+
     if credentials is None:
         raise _unauthorized("Not authenticated")
 
-    # 2. Verify signature and expiry. Any failure -> 401.
-    #    ExpiredSignatureError is a subclass of InvalidTokenError, so one
-    #    except covers expired, tampered and malformed tokens.
+    # Verify signature and expiry. Any failure -> 401.
     try:
         payload = decode_access_token(credentials.credentials)
     except jwt.InvalidTokenError:
         raise _unauthorized("Invalid or expired token")
 
-    # 3. "sub" holds the user id as a string; turn it back into an int.
+    # "sub" holds the user id as a string; turn it back into an int.
     try:
         user_id = int(payload["sub"])
     except (KeyError, ValueError):
         raise _unauthorized("Invalid token")
 
-    # 4. Load the user from the DATABASE. This is where the role comes from,
-    #    so it is never stale. If the user was deleted, the token is useless.
+    #Load the user from the DATABASE. This is where the role comes from,
+
     user = user_service.get_user_by_id(db, user_id)
     if user is None:
         raise _unauthorized("User no longer exists")

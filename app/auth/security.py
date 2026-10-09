@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
-import jwt  # the PyJWT library
+import jwt  
 
 from app.config import settings
 
 
-# ---------- Passwords (from Step 8) ----------
 
 def hash_password(plain_password: str) -> str:
     """Turn a plain password into a salted bcrypt hash (safe to store)."""
@@ -25,7 +24,7 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
         return False
 
 
-# ---------- JWT (new in Step 9) ----------
+
 
 def create_access_token(user_id: int) -> str:
     """Build and sign a JWT for this user."""
@@ -52,8 +51,6 @@ def decode_access_token(token: str) -> dict:
     return jwt.decode(
         token,
         settings.JWT_SECRET_KEY,
-        # Always pass an explicit list of allowed algorithms. This blocks
-        # attacks where a token claims a weaker algorithm (e.g. "none").
         algorithms=[settings.JWT_ALGORITHM],
         # Reject tokens that lack an expiry or a subject.
         options={"require": ["exp", "sub"]},

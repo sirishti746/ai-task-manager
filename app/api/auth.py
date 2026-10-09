@@ -12,14 +12,13 @@ router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 @router.post(
     "/register",
-    response_model=UserResponse,  # filters the output: password_hash can never leak
+    response_model=UserResponse, 
     status_code=status.HTTP_201_CREATED,
 )
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
     try:
         return user_service.create_user(db, user_in)
     except user_service.EmailAlreadyRegisteredError:
-        # Translate the service's plain exception into an HTTP 409 Conflict.
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered",

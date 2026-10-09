@@ -14,7 +14,6 @@ from app.database.session import SessionLocal
 from app.models.task import Task, TaskStatus
 from app.models.user import User, UserRole
 
-# ---------- The data to insert ----------
 
 SEED_USERS = [
     {
@@ -31,7 +30,6 @@ SEED_USERS = [
     },
 ]
 
-# email of the owner -> list of (title, description, status)
 SEED_TASKS = {
     "user@example.com": [
         ("Write project report", "Summarise the quarterly numbers for the team.", TaskStatus.PENDING),
@@ -45,7 +43,7 @@ SEED_TASKS = {
 }
 
 
-# ---------- Helpers ----------
+
 
 def get_or_create_user(db: Session, data: dict) -> tuple[User, bool]:
     """Return (user, created). Looks the user up by email first."""
@@ -59,10 +57,10 @@ def get_or_create_user(db: Session, data: dict) -> tuple[User, bool]:
         name=data["name"],
         email=data["email"],
         password_hash=hash_password(data["password"]),  # hashed, never plain
-        role=data["role"].value,  # enum -> plain string, e.g. "admin"
+        role=data["role"].value,  
     )
     db.add(user)
-    db.flush()  # sends the INSERT so user.id exists, but does not commit yet
+    db.flush() 
     return user, True
 
 
@@ -88,7 +86,7 @@ def create_task_if_missing(
     return True
 
 
-# ---------- Main ----------
+
 
 def seed() -> None:
     print("Seeding database...")
@@ -117,10 +115,9 @@ def seed() -> None:
                 else:
                     print(f"  [skipped] task  '{title}' for {email} already exists")
 
-        db.commit()  # everything becomes permanent here, all at once
+        db.commit()  
     except SQLAlchemyError as exc:
         db.rollback()  # undo the partial work
-        # Print only the error type: the full message may contain connection details.
         print(f"\nSeeding FAILED ({type(exc).__name__}). Nothing was saved.")
         print("Check that PostgreSQL is running and 'alembic upgrade head' has been run.")
         raise SystemExit(1)

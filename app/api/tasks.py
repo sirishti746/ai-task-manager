@@ -13,7 +13,7 @@ from app.services import task_service
 
 router = APIRouter(prefix="/api/tasks", tags=["Tasks"])
 
-# Reused HTTP errors, built from the service's plain exceptions.
+
 _NOT_FOUND = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 _FORBIDDEN = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
@@ -38,16 +38,14 @@ def list_tasks(
     return task_service.list_tasks(db, current_user)
 
 
-# Defined BEFORE the /{task_id} routes so this fixed path is matched first.
+
 @router.post(
     "/generate-description",
     response_model=GenerateDescriptionResponse,
-    # Any logged-in user may call it (401 otherwise).
+    
     dependencies=[Depends(get_current_user)],
 )
 def generate_description(request: GenerateDescriptionRequest):
-    # No try/except here: AIConfigurationError -> 503 and AIServiceError -> 502
-    # are handled globally in main.py.
     return GenerateDescriptionResponse(
         description=generate_task_description(request.title)
     )

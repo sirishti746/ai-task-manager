@@ -24,15 +24,13 @@ class TaskUpdate(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    # Both optional: send only what you want to change.
+  
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=5000)
 
     @field_validator("title")
     @classmethod
     def title_cannot_be_null(cls, value):
-        # Omitting title is fine (keeps the old one), but sending "title": null
-        # would try to write NULL into a NOT NULL column. Reject it as a 422.
         if value is None:
             raise ValueError("title cannot be null")
         return value
@@ -49,7 +47,7 @@ class TaskStatusUpdate(BaseModel):
 class TaskResponse(BaseModel):
     """What we return for a task."""
 
-    # from_attributes=True lets Pydantic read a SQLAlchemy Task object directly.
+    
     model_config = ConfigDict(from_attributes=True)
 
     id: int
