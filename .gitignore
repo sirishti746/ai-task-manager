@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+.venv/
+
+# Secrets
+.env
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
